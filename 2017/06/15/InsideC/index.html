@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="深度探索C++对象模型," />
 
 
 
@@ -93,12 +93,17 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Sylar&#39;s Notes">
-<meta property="og:url" content="http://www.hhhhyf.com/index.html">
+<meta name="description" content="ConstructorDefault Constructor编译器生成默认构造函数 类里面有一个member object,且该对象有一个默认构造函数，如果有一个以上的成员对象，会按成员对象声明的顺序，依次调用每个构造函数的。 类的基类有默认构造函数 类或基类的成员函数有虚函数 类的基类有Virtual Base Calss  所以说并不是所有的类没有定义默认构造函数，编译器就会自己生成一个！！">
+<meta name="keywords" content="深度探索C++对象模型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="InsideC++笔记 构造函数篇">
+<meta property="og:url" content="http://www.hhhhyf.com/2017/06/15/InsideC/index.html">
 <meta property="og:site_name" content="Sylar&#39;s Notes">
+<meta property="og:description" content="ConstructorDefault Constructor编译器生成默认构造函数 类里面有一个member object,且该对象有一个默认构造函数，如果有一个以上的成员对象，会按成员对象声明的顺序，依次调用每个构造函数的。 类的基类有默认构造函数 类或基类的成员函数有虚函数 类的基类有Virtual Base Calss  所以说并不是所有的类没有定义默认构造函数，编译器就会自己生成一个！！">
+<meta property="og:updated_time" content="2017-06-16T07:10:37.791Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Sylar&#39;s Notes">
+<meta name="twitter:title" content="InsideC++笔记 构造函数篇">
+<meta name="twitter:description" content="ConstructorDefault Constructor编译器生成默认构造函数 类里面有一个member object,且该对象有一个默认构造函数，如果有一个以上的成员对象，会按成员对象声明的顺序，依次调用每个构造函数的。 类的基类有默认构造函数 类或基类的成员函数有虚函数 类的基类有Virtual Base Calss  所以说并不是所有的类没有定义默认构造函数，编译器就会自己生成一个！！">
 
 
 
@@ -126,13 +131,13 @@
 
 
 
-  <link rel="canonical" href="http://www.hhhhyf.com/"/>
+  <link rel="canonical" href="http://www.hhhhyf.com/2017/06/15/InsideC/"/>
 
 
 
 
 
-  <title>Sylar's Notes</title>
+  <title>InsideC++笔记 构造函数篇 | Sylar's Notes</title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -158,9 +163,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-   page-home 
- ">
+  <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -243,9 +246,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -271,9 +274,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/15/InsideC/" itemprop="url">InsideC++笔记 构造函数篇</a></h1>
+          <h1 class="post-title" itemprop="name headline">InsideC++笔记 构造函数篇</h1>
         
 
         <div class="post-meta">
@@ -342,9 +343,7 @@
       
 
       
-        
-          
-            <h1 id="Constructor"><a href="#Constructor" class="headerlink" title="Constructor"></a>Constructor</h1><h2 id="Default-Constructor"><a href="#Default-Constructor" class="headerlink" title="Default Constructor"></a>Default Constructor</h2><h3 id="编译器生成默认构造函数"><a href="#编译器生成默认构造函数" class="headerlink" title="编译器生成默认构造函数"></a>编译器生成默认构造函数</h3><ul>
+        <h1 id="Constructor"><a href="#Constructor" class="headerlink" title="Constructor"></a>Constructor</h1><h2 id="Default-Constructor"><a href="#Default-Constructor" class="headerlink" title="Default Constructor"></a>Default Constructor</h2><h3 id="编译器生成默认构造函数"><a href="#编译器生成默认构造函数" class="headerlink" title="编译器生成默认构造函数"></a>编译器生成默认构造函数</h3><ul>
 <li>类里面有一个member object,且该对象有一个默认构造函数，如果有一个以上的成员对象，会按成员对象声明的顺序，依次调用每个构造函数的。</li>
 <li>类的基类有默认构造函数</li>
 <li>类或基类的成员函数有虚函数</li>
@@ -385,302 +384,72 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">A::A(int val)</div><div class="line"> : j(val)</div><div class="line">&#123;</div><div class="line"> 	i = j;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>对于这种代码i还是未定义的，因为初始化列表总是在大括号执行完之后才执行的。</p>
 
-          
+      
+    </div>
+
+    <div>
+      
         
+
       
     </div>
 
     <div>
       
-    </div>
+        
 
-    <div>
       
     </div>
 
     <div>
+      
+        
+
       
     </div>
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://www.hhhhyf.com/2017/06/14/设计稿(第一版)/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Sylar">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sylar's Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/14/设计稿(第一版)/" itemprop="url">设计稿(第一版)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-14T17:24:51+08:00">
-                2017-06-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/游戏/" itemprop="url" rel="index">
-                    <span itemprop="name">游戏</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
+            <a href="/tags/深度探索C-对象模型/" rel="tag"># 深度探索C++对象模型</a>
           
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h1><p>一直想做个自己觉得有意思的游戏，但是因为太懒，一直没有行动起来。最近的项目用的是Unreal引擎，但是接触引擎的大部分都是场景部分的模块，对角色动画，AI完全不了解，希望这个demo能学习一下这方面的知识，也能圆了自己一个小小的愿望。</p>
-<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>构思中的游戏是一个魔法世界的背景，主角在一个魔法塔里面。开始是一个新手学徒，然后通过完成老师的各种任务，完成魔法塔周围的地下城，成为牛逼大法师的狗血故事。</p>
-<h1 id="培养"><a href="#培养" class="headerlink" title="培养"></a>培养</h1><p>希望能做成一个养成游戏，披着魔法外壳的牧场物语，通过培养角色的属性，体验慢慢成长的乐趣。战斗可能只是去收集材料，大部分时间是在魔塔里面的。 </p>
-<h1 id="核心系统"><a href="#核心系统" class="headerlink" title="核心系统"></a>核心系统</h1><h2 id="主要"><a href="#主要" class="headerlink" title="主要"></a>主要</h2><ul>
-<li>时间类型 时间流逝会对世界造成影响。</li>
-<li>角色属性 待设计</li>
-<li>魔法类型 待设计</li>
-<li>战斗系统 希望能做成上古卷轴，巫师那种战斗模式吧。</li>
-</ul>
-<h2 id="次要"><a href="#次要" class="headerlink" title="次要"></a>次要</h2><ul>
-<li>药剂学 需要有一个种菜系统，和一个炼药系统。</li>
-<li>炼金学 需要一个抓怪物的系统，和培养怪物的系统。</li>
-</ul>
-<h1 id="地下城"><a href="#地下城" class="headerlink" title="地下城"></a>地下城</h1><p>地下城的可能有怪物，也可能是跳机关陷阱，可也能是解密。是所有材料，宝物产出的地方。</p>
-<h1 id="多人联机"><a href="#多人联机" class="headerlink" title="多人联机"></a>多人联机</h1><p>待定</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
       
 
       
       
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
       
 
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://www.hhhhyf.com/2017/06/08/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Sylar">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sylar's Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/08/hello-world/" itemprop="url">Hello World</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-08T09:51:06+08:00">
-                2017-06-08
-              </time>
+              <a href="/2017/06/14/设计稿(第一版)/" rel="next" title="设计稿(第一版)">
+                <i class="fa fa-chevron-left"></i> 设计稿(第一版)
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <p>hello world~  : )</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -688,6 +457,10 @@
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -707,8 +480,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.gif"
@@ -770,6 +552,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Constructor"><span class="nav-number">1.</span> <span class="nav-text">Constructor</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Default-Constructor"><span class="nav-number">1.1.</span> <span class="nav-text">Default Constructor</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#编译器生成默认构造函数"><span class="nav-number">1.1.1.</span> <span class="nav-text">编译器生成默认构造函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Copy-Constructor"><span class="nav-number">1.2.</span> <span class="nav-text">Copy Constructor</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#三个调用的情况"><span class="nav-number">1.2.1.</span> <span class="nav-text">三个调用的情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Default-Memberwise-Initialization"><span class="nav-number">1.2.2.</span> <span class="nav-text">Default Memberwise Initialization</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BitWise-Copy-Semantics-位逐次拷贝"><span class="nav-number">1.2.3.</span> <span class="nav-text">BitWise Copy Semantics 位逐次拷贝</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Named-Return-Value优化"><span class="nav-number">1.3.</span> <span class="nav-text">Named Return Value优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#成员初始化列表-Member-Initialization-List"><span class="nav-number">1.4.</span> <span class="nav-text">成员初始化列表 Member Initialization List</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -883,10 +681,10 @@
   
 
   
-    <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
 <script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
 
-  
+
 
   
 
