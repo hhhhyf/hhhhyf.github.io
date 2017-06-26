@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="有生之年," />
+  <meta name="keywords" content="深度探索C++对象模型," />
 
 
 
@@ -93,17 +93,17 @@
 
 
 
-<meta name="description" content="动机一直想做个自己觉得有意思的游戏，但是因为太懒，一直没有行动起来。最近的项目用的是Unreal引擎，但是接触引擎的大部分都是场景部分的模块，对角色动画，AI完全不了解，希望这个demo能学习一下这方面的知识，也能圆了自己一个小小的愿望。 背景构思中的游戏是一个魔法世界的背景，主角在一个魔法塔里面。开始是一个新手学徒，然后通过完成老师的各种任务，完成魔法塔周围的地下城，成为牛逼大法师的狗血故事。">
-<meta name="keywords" content="有生之年">
+<meta name="description" content="虚基类继承时的内存分布对象1234class X&amp;#123;&amp;#125;;class Y:public virtual X&amp;#123;&amp;#125;;class Z:public virtual X&amp;#123;&amp;#125;;class A:public Y, public Z&amp;#123;&amp;#125;; 使用sizeof之后size X = 1size Y = 8(vc++下等于4)size Z =">
+<meta name="keywords" content="深度探索C++对象模型">
 <meta property="og:type" content="article">
-<meta property="og:title" content="设计稿(第一版)">
-<meta property="og:url" content="http://www.hhhhyf.com/2017/06/14/设计稿(第一版)/index.html">
+<meta property="og:title" content="InsideC++笔记 Data语义学">
+<meta property="og:url" content="http://www.hhhhyf.com/2017/06/19/insideC-2/index.html">
 <meta property="og:site_name" content="Sylar&#39;s Notes">
-<meta property="og:description" content="动机一直想做个自己觉得有意思的游戏，但是因为太懒，一直没有行动起来。最近的项目用的是Unreal引擎，但是接触引擎的大部分都是场景部分的模块，对角色动画，AI完全不了解，希望这个demo能学习一下这方面的知识，也能圆了自己一个小小的愿望。 背景构思中的游戏是一个魔法世界的背景，主角在一个魔法塔里面。开始是一个新手学徒，然后通过完成老师的各种任务，完成魔法塔周围的地下城，成为牛逼大法师的狗血故事。">
-<meta property="og:updated_time" content="2017-06-16T07:27:14.702Z">
+<meta property="og:description" content="虚基类继承时的内存分布对象1234class X&amp;#123;&amp;#125;;class Y:public virtual X&amp;#123;&amp;#125;;class Z:public virtual X&amp;#123;&amp;#125;;class A:public Y, public Z&amp;#123;&amp;#125;; 使用sizeof之后size X = 1size Y = 8(vc++下等于4)size Z =">
+<meta property="og:updated_time" content="2017-06-21T03:57:55.527Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="设计稿(第一版)">
-<meta name="twitter:description" content="动机一直想做个自己觉得有意思的游戏，但是因为太懒，一直没有行动起来。最近的项目用的是Unreal引擎，但是接触引擎的大部分都是场景部分的模块，对角色动画，AI完全不了解，希望这个demo能学习一下这方面的知识，也能圆了自己一个小小的愿望。 背景构思中的游戏是一个魔法世界的背景，主角在一个魔法塔里面。开始是一个新手学徒，然后通过完成老师的各种任务，完成魔法塔周围的地下城，成为牛逼大法师的狗血故事。">
+<meta name="twitter:title" content="InsideC++笔记 Data语义学">
+<meta name="twitter:description" content="虚基类继承时的内存分布对象1234class X&amp;#123;&amp;#125;;class Y:public virtual X&amp;#123;&amp;#125;;class Z:public virtual X&amp;#123;&amp;#125;;class A:public Y, public Z&amp;#123;&amp;#125;; 使用sizeof之后size X = 1size Y = 8(vc++下等于4)size Z =">
 
 
 
@@ -131,13 +131,13 @@
 
 
 
-  <link rel="canonical" href="http://www.hhhhyf.com/2017/06/14/设计稿(第一版)/"/>
+  <link rel="canonical" href="http://www.hhhhyf.com/2017/06/19/insideC-2/"/>
 
 
 
 
 
-  <title>设计稿(第一版) | Sylar's Notes</title>
+  <title>InsideC++笔记 Data语义学 | Sylar's Notes</title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -257,7 +257,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://www.hhhhyf.com/2017/06/14/设计稿(第一版)/">
+    <link itemprop="mainEntityOfPage" href="http://www.hhhhyf.com/2017/06/19/insideC-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Sylar">
@@ -274,7 +274,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">设计稿(第一版)</h1>
+          <h1 class="post-title" itemprop="name headline">InsideC++笔记 Data语义学</h1>
         
 
         <div class="post-meta">
@@ -286,8 +286,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-14T17:24:51+08:00">
-                2017-06-14
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-19T11:01:38+08:00">
+                2017-06-19
               </time>
             
 
@@ -309,8 +309,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/游戏/" itemprop="url" rel="index">
-                    <span itemprop="name">游戏</span>
+                  <a href="/categories/c/" itemprop="url" rel="index">
+                    <span itemprop="name">c++</span>
                   </a>
                 </span>
 
@@ -343,21 +343,19 @@
       
 
       
-        <h1 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h1><p>一直想做个自己觉得有意思的游戏，但是因为太懒，一直没有行动起来。最近的项目用的是Unreal引擎，但是接触引擎的大部分都是场景部分的模块，对角色动画，AI完全不了解，希望这个demo能学习一下这方面的知识，也能圆了自己一个小小的愿望。</p>
-<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>构思中的游戏是一个魔法世界的背景，主角在一个魔法塔里面。开始是一个新手学徒，然后通过完成老师的各种任务，完成魔法塔周围的地下城，成为牛逼大法师的狗血故事。</p>
-<h1 id="培养"><a href="#培养" class="headerlink" title="培养"></a>培养</h1><p>希望能做成一个养成游戏，披着魔法外壳的牧场物语，通过培养角色的属性，体验慢慢成长的乐趣。战斗可能只是去收集材料，大部分时间是在魔塔里面的。 </p>
-<h1 id="核心系统"><a href="#核心系统" class="headerlink" title="核心系统"></a>核心系统</h1><h2 id="主要"><a href="#主要" class="headerlink" title="主要"></a>主要</h2><ul>
-<li>时间类型 时间流逝会对世界造成影响。</li>
-<li>角色属性 待设计</li>
-<li>魔法类型 待设计</li>
-<li>战斗系统 希望能做成上古卷轴，巫师那种战斗模式吧。</li>
-</ul>
-<h2 id="次要"><a href="#次要" class="headerlink" title="次要"></a>次要</h2><ul>
-<li>药剂学 需要有一个种菜系统，和一个炼药系统。</li>
-<li>炼金学 需要一个抓怪物的系统，和培养怪物的系统。</li>
-</ul>
-<h1 id="地下城"><a href="#地下城" class="headerlink" title="地下城"></a>地下城</h1><p>地下城的可能有怪物，也可能是跳机关陷阱，可也能是解密。是所有材料，宝物产出的地方。</p>
-<h1 id="多人联机"><a href="#多人联机" class="headerlink" title="多人联机"></a>多人联机</h1><p>待定</p>
+        <h1 id="虚基类继承时的内存分布对象"><a href="#虚基类继承时的内存分布对象" class="headerlink" title="虚基类继承时的内存分布对象"></a>虚基类继承时的内存分布对象</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">class X&#123;&#125;;</div><div class="line">class Y:public virtual X&#123;&#125;;</div><div class="line">class Z:public virtual X&#123;&#125;;</div><div class="line">class A:public Y, public Z&#123;&#125;;</div></pre></td></tr></table></figure>
+<p>使用sizeof之后<br>size X = 1<br>size Y = 8(vc++下等于4)<br>size Z = 8(vc++下等于4)<br>size A = 12(vc++下等于8)</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><ol>
+<li>sizeof(X)时，虽然什么都没有，但是编译器会安插一个char类型保证对象的内存地址独一无二。所以sizeof(x)==1</li>
+<li>对于类Y和Z，因为虚继承了X,编译器就会自己生成一个指针指向虚基类或者指向一个表格，表格里面存放着虚基类的地址或者偏移量。所以此时的Y,Z的大小就是指针的大小加上X的大小就等于5个bytes。然后在被内存对齐就是8bytes了<br><em>为什么vc++下面，Y,Z大小是4？</em><br>因为X是空的虚基类，在一些编译器下面就被优化了。一个空的虚基类会被看成派生类的开头部分,所以就节省了那个1个bytes，所以大小为4bytes</li>
+<li>对于A的大小，需要注意的是无论同一个虚基类被继承了多少次，只会有一个实体。所以A的大小就是1+8等于9bytes然后再对齐一下就变成了12bytes。同理vc++编译器下是8个bytes</li>
+</ol>
+<h2 id="数据成员"><a href="#数据成员" class="headerlink" title="数据成员"></a>数据成员</h2><h3 id="声明"><a href="#声明" class="headerlink" title="声明"></a>声明</h3><p>编译器会把一个以上的access section(public, private, protect)连锁在一起，所以定义多个sections不消耗额外的性能。access level中的member的排列次序必须和声明的次序相同。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">class Point3d</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">	virtual ~Point3d();</div><div class="line">private:</div><div class="line">	static 	Point3d origin;</div><div class="line">	float x, y, z;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>取某个坐标成员的地址 &amp;Point3d::z，等价于z坐标在class Point3d中的偏移量offset。</p>
+<h3 id="编译器如何区别一个指向没有任何数据成员的指针，和指向第一个数据成员的指针？"><a href="#编译器如何区别一个指向没有任何数据成员的指针，和指向第一个数据成员的指针？" class="headerlink" title="编译器如何区别一个指向没有任何数据成员的指针，和指向第一个数据成员的指针？"></a>编译器如何区别一个指向没有任何数据成员的指针，和指向第一个数据成员的指针？</h3><p>float Point3d::<em>p1 = 0;<br>float Point3d::</em>p2  = &amp;Point3d::x;<br>为了让编译器能区别上面两个指针，每个member的offset都会加1，这时候如果两个值相等，那说明他们肯定指向同一个数据成员。</p>
+<h3 id="两种存取方式"><a href="#两种存取方式" class="headerlink" title="两种存取方式"></a>两种存取方式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Point3d Origin, *pt = &amp;origin;</div><div class="line">origin.X = 0.0;</div><div class="line">pt-&gt;x = 0.0;</div></pre></td></tr></table></figure>
+<p>所以对于这两种存取方式的效率问题。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">origin.x = 0.0F;        // 等价于 *(&amp;origin + (&amp;Point3d::x - 1)) = 0.0;</div><div class="line">pt-&gt;x = 0.0F;           // 等价于 *(pt + (&amp;Point3d::x - 1)) = 0.0;</div></pre></td></tr></table></figure></p>
+<p>最大的问题在于Point3d的不确定性，如果他是一个派生类,而X是继承而来的。所以编译器是不知道Pt中X的offset,但是Origin则肯定是Point3d类型了</p>
 
       
     </div>
@@ -387,7 +385,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/有生之年/" rel="tag"># 有生之年</a>
+            <a href="/tags/深度探索C-对象模型/" rel="tag"># 深度探索C++对象模型</a>
           
         </div>
       
@@ -400,8 +398,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/06/08/hello-world/" rel="next" title="Hello World">
-                <i class="fa fa-chevron-left"></i> Hello World
+              <a href="/2017/06/15/InsideC/" rel="next" title="InsideC++笔记 构造函数篇">
+                <i class="fa fa-chevron-left"></i> InsideC++笔记 构造函数篇
               </a>
             
           </div>
@@ -409,10 +407,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/06/15/InsideC/" rel="prev" title="InsideC++笔记 构造函数篇">
-                InsideC++笔记 构造函数篇 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -541,7 +535,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#动机"><span class="nav-number">1.</span> <span class="nav-text">动机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#背景"><span class="nav-number">2.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#培养"><span class="nav-number">3.</span> <span class="nav-text">培养</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#核心系统"><span class="nav-number">4.</span> <span class="nav-text">核心系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#主要"><span class="nav-number">4.1.</span> <span class="nav-text">主要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#次要"><span class="nav-number">4.2.</span> <span class="nav-text">次要</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#地下城"><span class="nav-number">5.</span> <span class="nav-text">地下城</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#多人联机"><span class="nav-number">6.</span> <span class="nav-text">多人联机</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#虚基类继承时的内存分布对象"><span class="nav-number">1.</span> <span class="nav-text">虚基类继承时的内存分布对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分析"><span class="nav-number">1.1.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据成员"><span class="nav-number">1.2.</span> <span class="nav-text">数据成员</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#声明"><span class="nav-number">1.2.1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编译器如何区别一个指向没有任何数据成员的指针，和指向第一个数据成员的指针？"><span class="nav-number">1.2.2.</span> <span class="nav-text">编译器如何区别一个指向没有任何数据成员的指针，和指向第一个数据成员的指针？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#两种存取方式"><span class="nav-number">1.2.3.</span> <span class="nav-text">两种存取方式</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>

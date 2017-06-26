@@ -93,12 +93,15 @@
 
 
 
+<meta name="description" content="You have a dream, you gotta to protect it.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Sylar&#39;s Notes">
 <meta property="og:url" content="http://www.hhhhyf.com/index.html">
 <meta property="og:site_name" content="Sylar&#39;s Notes">
+<meta property="og:description" content="You have a dream, you gotta to protect it.">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Sylar&#39;s Notes">
+<meta name="twitter:description" content="You have a dream, you gotta to protect it.">
 
 
 
@@ -244,6 +247,152 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://www.hhhhyf.com/2017/06/19/insideC-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sylar">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sylar's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/06/19/insideC-2/" itemprop="url">InsideC++笔记 Data语义学</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-19T11:01:38+08:00">
+                2017-06-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c/" itemprop="url" rel="index">
+                    <span itemprop="name">c++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="虚基类继承时的内存分布对象"><a href="#虚基类继承时的内存分布对象" class="headerlink" title="虚基类继承时的内存分布对象"></a>虚基类继承时的内存分布对象</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">class X&#123;&#125;;</div><div class="line">class Y:public virtual X&#123;&#125;;</div><div class="line">class Z:public virtual X&#123;&#125;;</div><div class="line">class A:public Y, public Z&#123;&#125;;</div></pre></td></tr></table></figure>
+<p>使用sizeof之后<br>size X = 1<br>size Y = 8(vc++下等于4)<br>size Z = 8(vc++下等于4)<br>size A = 12(vc++下等于8)</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><ol>
+<li>sizeof(X)时，虽然什么都没有，但是编译器会安插一个char类型保证对象的内存地址独一无二。所以sizeof(x)==1</li>
+<li>对于类Y和Z，因为虚继承了X,编译器就会自己生成一个指针指向虚基类或者指向一个表格，表格里面存放着虚基类的地址或者偏移量。所以此时的Y,Z的大小就是指针的大小加上X的大小就等于5个bytes。然后在被内存对齐就是8bytes了<br><em>为什么vc++下面，Y,Z大小是4？</em><br>因为X是空的虚基类，在一些编译器下面就被优化了。一个空的虚基类会被看成派生类的开头部分,所以就节省了那个1个bytes，所以大小为4bytes</li>
+<li>对于A的大小，需要注意的是无论同一个虚基类被继承了多少次，只会有一个实体。所以A的大小就是1+8等于9bytes然后再对齐一下就变成了12bytes。同理vc++编译器下是8个bytes</li>
+</ol>
+<h2 id="数据成员"><a href="#数据成员" class="headerlink" title="数据成员"></a>数据成员</h2><h3 id="声明"><a href="#声明" class="headerlink" title="声明"></a>声明</h3><p>编译器会把一个以上的access section(public, private, protect)连锁在一起，所以定义多个sections不消耗额外的性能。access level中的member的排列次序必须和声明的次序相同。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">class Point3d</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">	virtual ~Point3d();</div><div class="line">private:</div><div class="line">	static 	Point3d origin;</div><div class="line">	float x, y, z;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>取某个坐标成员的地址 &amp;Point3d::z，等价于z坐标在class Point3d中的偏移量offset。</p>
+<h3 id="编译器如何区别一个指向没有任何数据成员的指针，和指向第一个数据成员的指针？"><a href="#编译器如何区别一个指向没有任何数据成员的指针，和指向第一个数据成员的指针？" class="headerlink" title="编译器如何区别一个指向没有任何数据成员的指针，和指向第一个数据成员的指针？"></a>编译器如何区别一个指向没有任何数据成员的指针，和指向第一个数据成员的指针？</h3><p>float Point3d::<em>p1 = 0;<br>float Point3d::</em>p2  = &amp;Point3d::x;<br>为了让编译器能区别上面两个指针，每个member的offset都会加1，这时候如果两个值相等，那说明他们肯定指向同一个数据成员。</p>
+<h3 id="两种存取方式"><a href="#两种存取方式" class="headerlink" title="两种存取方式"></a>两种存取方式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Point3d Origin, *pt = &amp;origin;</div><div class="line">origin.X = 0.0;</div><div class="line">pt-&gt;x = 0.0;</div></pre></td></tr></table></figure>
+<p>所以对于这两种存取方式的效率问题。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">origin.x = 0.0F;        // 等价于 *(&amp;origin + (&amp;Point3d::x - 1)) = 0.0;</div><div class="line">pt-&gt;x = 0.0F;           // 等价于 *(pt + (&amp;Point3d::x - 1)) = 0.0;</div></pre></td></tr></table></figure></p>
+<p>最大的问题在于Point3d的不确定性，如果他是一个派生类,而X是继承而来的。所以编译器是不知道Pt中X的offset,但是Origin则肯定是Point3d类型了</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
     
       
 
@@ -715,7 +864,7 @@
                alt="Sylar" />
           <p class="site-author-name" itemprop="name">Sylar</p>
            
-              <p class="site-description motion-element" itemprop="description"></p>
+              <p class="site-description motion-element" itemprop="description">You have a dream, you gotta to protect it.</p>
           
         </div>
         <nav class="site-state motion-element">
@@ -723,7 +872,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
