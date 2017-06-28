@@ -1,0 +1,761 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="深度探索C++对象模型," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="Function 语义学非静态成员函数  NonStatic Member Functions调用非静态成员函数的时候没有额外的开销，因为编译器会把非静态成员函数转换为一个局部函数1234//非成员函数float magnitude3d(const Point3d *_this)&amp;#123;...&amp;#125;//成员函数float Point3d::magnitude3d()const&amp;#123;">
+<meta name="keywords" content="深度探索C++对象模型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="InsideC++笔记 Function语义学">
+<meta property="og:url" content="http://www.hhhhyf.com/2017/06/26/insideC-3/index.html">
+<meta property="og:site_name" content="Sylar&#39;s Notes">
+<meta property="og:description" content="Function 语义学非静态成员函数  NonStatic Member Functions调用非静态成员函数的时候没有额外的开销，因为编译器会把非静态成员函数转换为一个局部函数1234//非成员函数float magnitude3d(const Point3d *_this)&amp;#123;...&amp;#125;//成员函数float Point3d::magnitude3d()const&amp;#123;">
+<meta property="og:updated_time" content="2017-06-28T03:45:55.432Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="InsideC++笔记 Function语义学">
+<meta name="twitter:description" content="Function 语义学非静态成员函数  NonStatic Member Functions调用非静态成员函数的时候没有额外的开销，因为编译器会把非静态成员函数转换为一个局部函数1234//非成员函数float magnitude3d(const Point3d *_this)&amp;#123;...&amp;#125;//成员函数float Point3d::magnitude3d()const&amp;#123;">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.hhhhyf.com/2017/06/26/insideC-3/"/>
+
+
+
+
+
+  <title>InsideC++笔记 Function语义学 | Sylar's Notes</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sylar's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://www.hhhhyf.com/2017/06/26/insideC-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sylar">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sylar's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">InsideC++笔记 Function语义学</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-26T15:32:05+08:00">
+                2017-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c/" itemprop="url" rel="index">
+                    <span itemprop="name">c++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Function-语义学"><a href="#Function-语义学" class="headerlink" title="Function 语义学"></a>Function 语义学</h1><h2 id="非静态成员函数-NonStatic-Member-Functions"><a href="#非静态成员函数-NonStatic-Member-Functions" class="headerlink" title="非静态成员函数  NonStatic Member Functions"></a>非静态成员函数  NonStatic Member Functions</h2><p>调用非静态成员函数的时候没有额外的开销，因为编译器会把非静态成员函数转换为一个局部函数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//非成员函数</div><div class="line">float magnitude3d(const Point3d *_this)&#123;...&#125;</div><div class="line">//成员函数</div><div class="line">float Point3d::magnitude3d()const&#123;...&#125;</div></pre></td></tr></table></figure></p>
+<p>编译器对非静态成员函数的操作:<br>1.改写函数签名，把this指针插入到函数中</p>
+<blockquote>
+<p>float Point3d::magnitude3d(Point3d *const this)</p>
+</blockquote>
+<p>2.把所有的非静态成员数据改成用this指针调用<br>3.把成员函数的名字改成一个独一无二的名称</p>
+<blockquote>
+<p>extern magnitude_7Point3dFv(regiser Point3d *const this);</p>
+</blockquote>
+<p>4.把所有函数调用的地方替换了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">obj.magnitude(); // magnitude_7Point3dFv(&amp;obj);</div><div class="line">ptr-&gt;magnitude(); // magnitude_7Point3dFv(ptr);</div></pre></td></tr></table></figure></p>
+<h2 id="虚函数-Virtual-Member-Functions"><a href="#虚函数-Virtual-Member-Functions" class="headerlink" title="虚函数 Virtual Member Functions"></a>虚函数 Virtual Member Functions</h2><p>如果normalize声明为虚函数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ptr-&gt;normalize(); // (*ptr-&gt;vptr[1](ptr);</div><div class="line">obj.normalize(); // (* obj.vptr[1])(&amp;obj);</div></pre></td></tr></table></figure></p>
+<p>因为obj的调用方式说明他不支持多态，所以这个调用会想非静态成员函数一样转换为</p>
+<blockquote>
+<p>normalize_7Point3dFv(&amp;obj);</p>
+</blockquote>
+<h2 id="静态成员函数Static-member-function"><a href="#静态成员函数Static-member-function" class="headerlink" title="静态成员函数Static  member function"></a>静态成员函数Static  member function</h2><p>因为这货没有this指针，所以基本上跟非成员函数差不多。</p>
+<h1 id="Virtual-Member-Functions-虚函数"><a href="#Virtual-Member-Functions-虚函数" class="headerlink" title="Virtual Member Functions 虚函数"></a>Virtual Member Functions 虚函数</h1><h2 id="单继承下的虚函数"><a href="#单继承下的虚函数" class="headerlink" title="单继承下的虚函数"></a>单继承下的虚函数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">prt-&gt;z();</div></pre></td></tr></table></figure>
+<p>如果z是一个虚函数，那么执行期是如何正确调用z的呢？</p>
+<h3 id="虚函数实现的机制"><a href="#虚函数实现的机制" class="headerlink" title="虚函数实现的机制"></a>虚函数实现的机制</h3><p>首先多态对象会增加两个成员</p>
+<ol>
+<li>一个字符串或数字表示clas的类型，</li>
+<li>一个指针，指针指向一个表格，表格是所有虚函数的执行期地址。<br>为每个虚函数分配一个索引，用来查找在表格中的位置。</li>
+<li>继承类继承派生类的所有虚函数表，</li>
+<li>如果继承类里面有个override了虚函数的，就要在对应索引位置用重写的函数地址覆盖。</li>
+<li>派生类可以加入新的虚函数</li>
+</ol>
+<h2 id="多重继承下的虚函数"><a href="#多重继承下的虚函数" class="headerlink" title="多重继承下的虚函数"></a>多重继承下的虚函数</h2><p>多重继承结构下，基本上继承几个就有几个虚函数表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">class Base1</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">	Base1();</div><div class="line">	virtual ~Base1();</div><div class="line">	virtual void func1();</div><div class="line">	virtual void Base1 *clone() const;</div><div class="line">protected:</div><div class="line">	float data_base1;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class Base2</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">	Base2();</div><div class="line">	virtual ~Base2();</div><div class="line">	virtual void func2();</div><div class="line">	virtual void Base2 *clone() const;</div><div class="line">protected:</div><div class="line">	float data_base2;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"></div><div class="line">class Derived: public Base1, public Base2</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">	Derived();</div><div class="line">	virtual ~Derived();</div><div class="line">	virtual void Derived *clone() const;</div><div class="line">protected:</div><div class="line">	float data_Derived;	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>对于上面的继承结构Derived类，继承了Base1,Base2<br>Base1的虚函数表结构：</p>
+<blockquote>
+<p>[0] Base1::~Base1()<br>[1] Base1::func1()<br>[2] Base1::clone()</p>
+</blockquote>
+<p>Base2的虚函数表结构：</p>
+<blockquote>
+<p>[0] Base2::~Base2();<br>[1] Base2::func2();<br>[2] Base2::clone();</p>
+</blockquote>
+<p>Derived会产生两个虚函数表:<br>_vptr_Base1的结构</p>
+<blockquote>
+<p>[0] Derived::~Derived()<br>[1] Base1::func1()<br>[2] Derived::clone()<br>[3] Base2::func2()</p>
+</blockquote>
+<p>_vptr_Base2的结构</p>
+<blockquote>
+<p>[0] Derived::~Derived()<br>[1] Base2::func2()<br>[2] Derived::clone()</p>
+</blockquote>
+<h2 id="虚拟继承下的虚函数"><a href="#虚拟继承下的虚函数" class="headerlink" title="虚拟继承下的虚函数"></a>虚拟继承下的虚函数</h2><p>当菱形继承结构时,用虚继承，是为了避免重复拷贝，所以会保存一份副本。<br>如A派生出B、C 又D虚继承与B,C<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">class A&#123;&#125;</div><div class="line">class B:public A&#123;&#125;</div><div class="line">class C:public A&#123;&#125;</div><div class="line">class D:public virtual B, public virtual C&#123;&#125;</div></pre></td></tr></table></figure></p>
+<p>这个时候D的结构会有B的虚函数表，C的虚函数表，还有共享的A的虚函数表<br>要注意的是多重继承，且虚继承的时候，最上次的基类中最好不要定义成员数据。</p>
+<h2 id="内联函数-inline-function"><a href="#内联函数-inline-function" class="headerlink" title="内联函数 inline function"></a>内联函数 inline function</h2><p>设置inline只是一个请求，实际是否为内联函数是由编译器决定的。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">inline int bar()</div><div class="line">&#123;</div><div class="line">	int minval;</div><div class="line">	int val1 = 1024;</div><div class="line">	int val2 = 2048;</div><div class="line"></div><div class="line">	minval = min(val1, val2);     // 1</div><div class="line">	minval = min(1024, 2048); 	  // 2</div><div class="line">	minval = min(foo(), bar()+1); //3 </div><div class="line">	return minval;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>情况1 参数直接代换<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">minval = val1 &lt; val2 ? val2 : val2;</div></pre></td></tr></table></figure></p>
+<p>情况2 直接使用常量<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">minval = 1024；</div></pre></td></tr></table></figure></p>
+<p>情况3 为避免重复求值会导入一个临时对象<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">int t1,t2;</div><div class="line">minval = (t1=foo()), (t2=bar()+1), t1&lt;t2?t1:t2;</div></pre></td></tr></table></figure></p>
+<p>如果在inline定义里面加入一个局部变量<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">inline int min(int i, int j)</div><div class="line">&#123;</div><div class="line">	int local_val;</div><div class="line">	int mainval;</div><div class="line">	...</div><div class="line">	minval = min(vall1, val2); </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>一般而言，inline函数里面的每个局部变量都会放在函数的一个封闭区域内，且被设成一个独一无二的名字。<br>所以要注意的是滥用含局部变量，且有副作用参数加入临时对象的情况，会导致程序的扩张。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/深度探索C-对象模型/" rel="tag"># 深度探索C++对象模型</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/06/19/insideC-2/" rel="next" title="InsideC++笔记 Data语义学">
+                <i class="fa fa-chevron-left"></i> InsideC++笔记 Data语义学
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Sylar" />
+          <p class="site-author-name" itemprop="name">Sylar</p>
+           
+              <p class="site-description motion-element" itemprop="description">You have a dream, you gotta to protect it.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Function-语义学"><span class="nav-number">1.</span> <span class="nav-text">Function 语义学</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#非静态成员函数-NonStatic-Member-Functions"><span class="nav-number">1.1.</span> <span class="nav-text">非静态成员函数  NonStatic Member Functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#虚函数-Virtual-Member-Functions"><span class="nav-number">1.2.</span> <span class="nav-text">虚函数 Virtual Member Functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#静态成员函数Static-member-function"><span class="nav-number">1.3.</span> <span class="nav-text">静态成员函数Static  member function</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Virtual-Member-Functions-虚函数"><span class="nav-number">2.</span> <span class="nav-text">Virtual Member Functions 虚函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#单继承下的虚函数"><span class="nav-number">2.1.</span> <span class="nav-text">单继承下的虚函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#虚函数实现的机制"><span class="nav-number">2.1.1.</span> <span class="nav-text">虚函数实现的机制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多重继承下的虚函数"><span class="nav-number">2.2.</span> <span class="nav-text">多重继承下的虚函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#虚拟继承下的虚函数"><span class="nav-number">2.3.</span> <span class="nav-text">虚拟继承下的虚函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内联函数-inline-function"><span class="nav-number">2.4.</span> <span class="nav-text">内联函数 inline function</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sylar</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
