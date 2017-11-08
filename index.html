@@ -257,6 +257,290 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://www.hhhhyf.com/2017/11/08/c-11/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sylar">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sylar's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/11/08/c-11/" itemprop="url">c++11/14学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-08T15:39:43+08:00">
+                2017-11-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://www.gitbook.com/book/changkun/cpp1x-tutorial/details" target="_blank" rel="external">学习资料</a></p>
+<h1 id="c-的特性"><a href="#c-的特性" class="headerlink" title="c++的特性"></a>c++的特性</h1><h2 id="nullptr"><a href="#nullptr" class="headerlink" title="nullptr"></a>nullptr</h2><p>之前的NULL，有时候编译器会为((void*)0),有的会定义为0.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">char *Ch = NULL;</div><div class="line">void foo(char *);</div><div class="line">void foo(int);</div></pre></td></tr></table></figure></p>
+<p>这种情况。因为NULL被定义0了，调用foo(CH)重载就调用foo(int)了，就会产生未知的错误。</p>
+<h2 id="constexpr"><a href="#constexpr" class="headerlink" title="constexpr"></a>constexpr</h2><p>这玩意就是显示声明函数或者构造函数为常数，在编译的时候就告诉编译器，函数xxx是一个常量。感觉用在递归函数啊什么的，提高性能的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">constexpr int fibonacci(const int n) &#123;</div><div class="line">if(n == 1) return 1;</div><div class="line">if(n == 2) return 1;</div><div class="line">return fibonacci(n-1)+fibonacci(n-2);</div></pre></td></tr></table></figure></p>
+<h2 id="类型推导"><a href="#类型推导" class="headerlink" title="类型推导"></a>类型推导</h2><h3 id="auto"><a href="#auto" class="headerlink" title="auto"></a>auto</h3><p>自动推导类型，我一般都用在那种模板里面很长的变量的定义，不能用在函数参数推导，数组类型推导。</p>
+<h3 id="decltype"><a href="#decltype" class="headerlink" title="decltype"></a>decltype</h3><p>decltype(表达式) 和auto配合使用，推导出表达式的类型。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">auto x = 1;</div><div class="line">auto y = 2;</div><div class="line">decltype(x+y) z;</div></pre></td></tr></table></figure></p>
+<p>在模板中使用，得到返回类型<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">//c11</div><div class="line">template&lt;typename T, typename U&gt;</div><div class="line">auto add(T x, U y) -&gt; decltype(x+y) &#123;</div><div class="line">return x+y;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//c14后可以直接</div><div class="line">template&lt;typename T, typename U&gt;</div><div class="line">auto add(T x, U y) &#123;</div><div class="line">return x+y</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="for-循环"><a href="#for-循环" class="headerlink" title="for 循环"></a>for 循环</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">for(auto &amp;i: array)</div><div class="line">&#123;</div><div class="line">    std:count &lt;&lt; i &lt;&lt; std::endl;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="初始化列表"><a href="#初始化列表" class="headerlink" title="初始化列表"></a>初始化列表</h2><p>之前只有那些结构体啊，数组可以用{}进行初始化。但是类就只能通过构造函数。<br>以前初始化一个容器需要<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">int a[] = &#123;0, 1, 2, 3&#125;;</div><div class="line">std:vector&lt;int&gt; vec(a, a+sizeof(a));</div><div class="line">//或者</div><div class="line">vec.push_back(0);</div><div class="line">vec.push_back(1);</div><div class="line">vec.push_back(2);</div><div class="line">vec.push_back(3);</div><div class="line"></div><div class="line">//现在直接</div><div class="line">std::vector&lt;int&gt; vec = &#123;1, 2, 3, 4&#125;;</div></pre></td></tr></table></figure></p>
+<h2 id="模板"><a href="#模板" class="headerlink" title="模板"></a>模板</h2><h3 id="外部模板"><a href="#外部模板" class="headerlink" title="外部模板"></a>外部模板</h3><p>之前模板只在使用的时候被实例化，就是碰到了完整定义的模板都会实例化。c11加入了外部模板。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">template class std::vector&lt;MagicClass&gt;; // 强行实例化</div><div class="line">extern template class std::vector&lt;MagicClass&gt;; // 不在该编译文件中实例化</div></pre></td></tr></table></figure></p>
+<h3 id="using-类型别名"><a href="#using-类型别名" class="headerlink" title="using 类型别名"></a>using 类型别名</h3><p>和typedef 一样，但是还可以定义与模板的类型名称<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">typedef int (*process)(void *); // 定义了一个返回类型为 int，参数为</div><div class="line">void* 的函数指针类型，名字叫做 process</div><div class="line">using process = void(*)(void *); // 同上, 更加直观</div><div class="line">using NewType = SuckType&lt;std::vector, std::string&gt;;</div></pre></td></tr></table></figure></p>
+<h3 id="默认模板参数"><a href="#默认模板参数" class="headerlink" title="默认模板参数"></a>默认模板参数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">template&lt;typename T = int, typename U = int&gt;</div><div class="line">auto add(T x, U y) -&gt; decltype(x+y) &#123;</div><div class="line">return x+y</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="变长参数模板"><a href="#变长参数模板" class="headerlink" title="变长参数模板"></a>变长参数模板</h3><p><code>template&lt;typename... Args&gt; class Test</code></p>
+<p>递归解包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">#include &lt;iostream&gt;</div><div class="line">template&lt;typename T&gt;</div><div class="line">void printf(T value) </div><div class="line">&#123;</div><div class="line">    std::cout &lt;&lt; value &lt;&lt; std::endl;</div><div class="line">&#125;</div><div class="line">template&lt;typename T, typename... Args&gt;</div><div class="line">void printf(T value, Args... args)</div><div class="line">&#123;</div><div class="line">    std::cout &lt;&lt; value &lt;&lt; std::endl;</div><div class="line">    printf(args...);</div><div class="line">&#125;</div><div class="line"></div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">    printf(1, 2, &quot;123&quot;, 1.1);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="委托构造"><a href="#委托构造" class="headerlink" title="委托构造"></a>委托构造</h2><p>同一个类里面一个构造函数调用另外一个构造函数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">class Base </div><div class="line">&#123;</div><div class="line"></div><div class="line">Base() &#123; value1 = 1; &#125;</div><div class="line">Base(int value) : Base()</div><div class="line">&#123; // 委托 Base() 构造函数</div><div class="line">    value2 = 2;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public:</div><div class="line">    int value1;</div><div class="line">    int value2;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<h2 id="继承构造"><a href="#继承构造" class="headerlink" title="继承构造"></a>继承构造</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">class Subclass : public Base</div><div class="line"> &#123;</div><div class="line">public:</div><div class="line">    using Base::Base; // 继承构造</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<h2 id="override"><a href="#override" class="headerlink" title="override"></a>override</h2><p>当重载虚函数时，override会显示告知编译器检查父类有没有这样的函数，没有会编译不过。</p>
+<h2 id="final"><a href="#final" class="headerlink" title="final"></a>final</h2><p>final 防止被继承的函数重载</p>
+<h2 id="显示禁用默认函数"><a href="#显示禁用默认函数" class="headerlink" title="显示禁用默认函数"></a>显示禁用默认函数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">class Magic </div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    Magic() = default; // 显式声明使用编译器生成的构造</div><div class="line">    Magic&amp; operator=(const Magic&amp;) = delete; // 显式声明拒绝编译器生成构造</div><div class="line">    Magic(int magic_number);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="强类型枚举"><a href="#强类型枚举" class="headerlink" title="强类型枚举"></a>强类型枚举</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">enum class new_enum:unsigned int</div><div class="line">&#123;</div><div class="line">    ETYPE1,</div><div class="line">    ETYPE2</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>主要是这么定义的枚举不会像以前那样被隐式转换了。</p>
+<h2 id="lambda表达式"><a href="#lambda表达式" class="headerlink" title="lambda表达式"></a>lambda表达式</h2><p><a href=""></a>{}定义。。。<br>[]是捕获列表，[var1, var2]捕获变量，[&amp;]按引用捕获，[=]按值捕获</p>
+<h2 id="std-function"><a href="#std-function" class="headerlink" title="std::function"></a>std::function</h2><p>我的理解就是一个函数对象</p>
+<h2 id="std-bind-std-placeholder"><a href="#std-bind-std-placeholder" class="headerlink" title="std::bind / std:placeholder"></a>std::bind / std:placeholder</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">int fun(int a, int b, int c)</div><div class="line">&#123;</div><div class="line">    ...</div><div class="line">&#125;</div><div class="line"></div><div class="line">auto fun = std::bind(fun, std::placeholders::_1, 1, 2)</div><div class="line"></div><div class="line">fun(999); //相当于 fun(999, 1, 2);</div></pre></td></tr></table></figure>
+<h2 id="右值引用"><a href="#右值引用" class="headerlink" title="右值引用"></a>右值引用</h2><p>###左值(lvalue, left value)<br>顾名思义就是赋值符号左边的值。准确来说，左值是表达式（不一定是赋值表达式）后依然存在的持久对象。</p>
+<p>###右值(rvalue, right value)<br>赋值符号右边的值，是指表达式结束后就不再存在的临时对象。</p>
+<p>###纯右值(prvalue, pure rvalue)<br>纯粹的右值，要么是纯粹的字面量，例如 10 ,true ；要么是求值结果相当于字面量或匿名临时对象，例如 1+2 。非引用返回的临时变量、运算表达式产生的临时变量、原始字面量、Lambda 表达式都属于纯右值。</p>
+<p>###将亡值(xvalue, expiring value)<br>是 C++11 为了引入右值引用而提出的概念（因此在传统 C++中，纯右值和右值是统一个概念），也就是即将被销毁、却能够被移动的值。</p>
+<p>右值引用的申明 T &amp;&amp;<br>std::move 这个方法将左值参数无条件的转换为右值</p>
+<p>移动语义<br>之前的类拷贝是创一个新的然后塞过去。就导致一个循环会创很多临时变量<br>用移动语义会拿到将亡值，然后直接拷贝内存。就不用创新的了。</p>
+<p>模板函数中使用 T&amp;&amp; 不一定能进行右值引用，当传入左值时，此函数的引用将被推导为左值。更准确的讲，无论模板参数是什么类型的引用，当且仅当实参类型为右引用时，模板参数才能被推导为右引用类型。</p>
+<h2 id="std-array"><a href="#std-array" class="headerlink" title="std::array"></a>std::array</h2><p>std::array 是封装固定大小数组的容器。<br>std::array<int, 3=""> a = {1,2,3};<br>std::array 保存在栈内存,std::vector保存在堆内存。</int,></p>
+<h2 id="std-forward-list"><a href="#std-forward-list" class="headerlink" title="std::forward_list"></a>std::forward_list</h2><p>和std::list差不多。不过是单向的</p>
+<h2 id="无序容器"><a href="#无序容器" class="headerlink" title="无序容器"></a>无序容器</h2><p>std::unordered_map / std::unordered_multimap 和std::unordered_set / std::unordered_multiset 。<br>内部是Hash实现的。复杂度是O(constant)</p>
+<h2 id="std-tuple"><a href="#std-tuple" class="headerlink" title="std::tuple"></a>std::tuple</h2><p>类模板 std::tuple 是固定大小的异类值汇集</p>
+<ol>
+<li>std::make_tuple : 构造元组</li>
+<li>std::get : 获得元组某个位置的值</li>
+<li>std::tie : 元组拆包</li>
+</ol>
+<p>RAII全称为Resource Acquisition Is Initialization 资源获取就是初始化</p>
+<h2 id="std-shared-ptr"><a href="#std-shared-ptr" class="headerlink" title="std::shared_ptr"></a>std::shared_ptr</h2><p>只能指针，，它能够记录多少个 shared_ptr 共同指向一个对象，从而消除显示的调用 delete ，当引用计数变为零的时候就会将对象自动删除。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">std::shared_ptr pointer = std::make_shared&lt;int&gt;(10);</div><div class="line">std::shared_ptr&lt;int&gt; pointer2 = pointer; //计数+1</div></pre></td></tr></table></figure></p>
+<h2 id="std-unique-ptr"><a href="#std-unique-ptr" class="headerlink" title="std::unique_ptr"></a>std::unique_ptr</h2><p>独占的智能指针，它禁止其他智能指针与其共享同一个对象。可以使用std::move 将其转移给其他的 unique_ptr<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">std::unique_ptr&lt;int&gt; pointer = std::make_unique&lt;int&gt;(10); </div><div class="line">std::unique_ptr&lt;int&gt; pointer2 = pointer;  //非法</div></pre></td></tr></table></figure></p>
+<h2 id="std-weak-ptr"><a href="#std-weak-ptr" class="headerlink" title="std::weak_ptr"></a>std::weak_ptr</h2><p> std::weak_ptr 用来表达临时所有权的概念：当某个对象只有存在时才需要被访问，而且随时可能被他人删除时，可以使用 std::weak_ptr 来跟踪该对象。需要获得临时所有权时，则将其转换为 std::shared_ptr，此时如果原来的 std::shared_ptr 被销毁，则该对象的生命期将被延长至这个临时的 std::shared_ptr 同样被销毁为止。</p>
+<h2 id="std-thread"><a href="#std-thread" class="headerlink" title="std::thread"></a>std::thread</h2><p>用于创建一个执行的线程实例</p>
+<h2 id="std-mutex"><a href="#std-mutex" class="headerlink" title="std::mutex"></a>std::mutex</h2><p>互斥量，通过其成员函数 lock() 可以仅此能上锁， unlock() 可以进行解锁。配合std::lock_gurad 使用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">void some_operation(const std::string &amp;message)</div><div class="line"> &#123;</div><div class="line">    static std::mutex mutex;</div><div class="line">    std::lock_guard&lt;std::mutex&gt; lock(mutex);</div><div class="line">    // ...操作</div><div class="line">    // 当离开这个作用域的时候，互斥锁会被析构，同时unlock互斥锁</div><div class="line">    // 因此这个函数内部的可以认为是临界区</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>std::unique_lock 独占权管理mutex</p>
+<p>std::future, std::packaged_task 异步操纵结果</p>
+<p>std::condition_variable 条件竞争</p>
+<p><a href="https://www.gitbook.com/book/chenxiaowei/cpp_concurrency_in_action/details" target="_blank" rel="external">其实也没怎么用过，详细要看这个</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://www.hhhhyf.com/2017/07/20/dx11/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sylar">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sylar's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/07/20/dx11/" itemprop="url">dx11学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-20T10:43:37+08:00">
+                2017-07-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h1><p>最近老是查一些显存的内存泄漏问题，因为ue4在pc上的rhi基本上都是dx实现，有很多看的不是很懂的地方，感觉需要学习一下这玩意。</p>
+<h1 id="Direct3d"><a href="#Direct3d" class="headerlink" title="Direct3d"></a>Direct3d</h1><p>官网的介绍是</p>
+<blockquote>
+<p>Direct3D is a low-level API that you can use to draw triangles, lines, or points per frame, or to start highly parallel operations on the GPU.</p>
+</blockquote>
+<p>其实就是一组操作图像的api。。</p>
+<h1 id="DXGI"><a href="#DXGI" class="headerlink" title="DXGI"></a>DXGI</h1><p>Microsoft DirectX Graphics Infrastructure (DXGI)，我的理解就是一个位于Direct3d和硬件的中间层，查了一下说是，因为dx不停的升级，每个版本有很多能共享的代码，放到这里面来管理了。</p>
+<h1 id="The-Swap-Chain"><a href="#The-Swap-Chain" class="headerlink" title="The Swap Chain"></a>The Swap Chain</h1><p>因为显示器刷新没有gpu快，所以会有一个交换链的机制用于渲染，就是两块缓存区域，当前显示的时候，可能后台下一帧已经准备好了。</p>
+<h1 id="ID3D11Device"><a href="#ID3D11Device" class="headerlink" title="ID3D11Device"></a>ID3D11Device</h1><p>In Direct3D, a device is an object that is intended to be a virtual representation of your video adapter. 应该是显卡的抽象，用来创建资源。</p>
+<h1 id="ID3D11DeviceContext"><a href="#ID3D11DeviceContext" class="headerlink" title="ID3D11DeviceContext"></a>ID3D11DeviceContext</h1><p>A device context is similar to a device, but it is responsible for managing the GPU and the rendering pipeline (the device mostly handles video memory). This object is used to render graphics and to determine how they will be rendered.<br>主要是用来管理gpu渲染流程。</p>
+<h1 id="IDXGISwapChain"><a href="#IDXGISwapChain" class="headerlink" title="IDXGISwapChain"></a>IDXGISwapChain</h1><p>就是刚才说的交换链的抽象，用来交换前后台的缓存的buffer</p>
+<h1 id="DXGI-SWAP-CHAIN-DESC"><a href="#DXGI-SWAP-CHAIN-DESC" class="headerlink" title="DXGI_SWAP_CHAIN_DESC"></a>DXGI_SWAP_CHAIN_DESC</h1><p>交换链的描述<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">typedef struct DXGI_SWAP_CHAIN_DESC</div><div class="line">    &#123;</div><div class="line">    DXGI_MODE_DESC BufferDesc;</div><div class="line">    DXGI_SAMPLE_DESC SampleDesc; //采样</div><div class="line">    DXGI_USAGE BufferUsage;</div><div class="line">    UINT BufferCount;  //后台缓冲区数量</div><div class="line">    HWND OutputWindow;  </div><div class="line">    BOOL Windowed;</div><div class="line">    DXGI_SWAP_EFFECT SwapEffect;</div><div class="line">    UINT Flags;</div><div class="line">    &#125; 	DXGI_SWAP_CHAIN_DESC;</div></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://www.hhhhyf.com/2017/06/26/insideC-3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -867,6 +1151,7 @@
 </ul>
 <h1 id="地下城"><a href="#地下城" class="headerlink" title="地下城"></a>地下城</h1><p>地下城的可能有怪物，也可能是跳机关陷阱，可也能是解密。是所有材料，宝物产出的地方。</p>
 <h1 id="多人联机"><a href="#多人联机" class="headerlink" title="多人联机"></a>多人联机</h1><p>待定</p>
+<p>…………………………………………………………………………………….<br>2017-7-4 总结<br>花了两个周末，完成了人物的基本逻辑，动作行为状态机，行走跑跳攻击，连击。主要的问题在于动作连贯表现不是很好。不过对UE4动画系统那一套 基本上搞明白了怎么用。<br>然后又研究了ai系统，实现了一个简单的怪物巡逻，然后发现主角了会自己过来攻击的逻辑。</p>
 
           
         
@@ -946,7 +1231,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -968,7 +1253,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
