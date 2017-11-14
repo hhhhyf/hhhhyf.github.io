@@ -257,6 +257,152 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://www.hhhhyf.com/2017/11/14/cpp-concurrency/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sylar">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sylar's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/11/14/cpp-concurrency/" itemprop="url">线程管理和共享数据</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-14T10:32:45+08:00">
+                2017-11-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="线程管理"><a href="#线程管理" class="headerlink" title="线程管理"></a>线程管理</h1><h2 id="创建新线程"><a href="#创建新线程" class="headerlink" title="创建新线程"></a>创建新线程</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">void function()</div><div class="line"></div><div class="line">std::thread MyThread(function);  </div><div class="line">std::thread MyThread((function())); </div><div class="line">std::thread MyThread&#123;function()&#125;;</div><div class="line">std::thread MyThread([]()&#123;function();&#125;);</div><div class="line"></div><div class="line">MyThread.detach(); //不等待线程结束</div><div class="line">MyThread.join(); //等待线程结束</div></pre></td></tr></table></figure>
+<p>可以detach之后在join回来，join之后detach出去。</p>
+<h2 id="向线程函数传递参数"><a href="#向线程函数传递参数" class="headerlink" title="向线程函数传递参数"></a>向线程函数传递参数</h2><ul>
+<li>线程的构造函数无视函数期待的参数类型,<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">void Print(const string&amp; str);</div><div class="line">string str = &quot;1111&quot;;</div><div class="line">std::thread TestThread(Print, str); //输出111</div><div class="line">std::thread TestThread(Print, std::ref(str)); //输出222</div><div class="line">str = &quot;222&quot;;</div><div class="line">TestThread.join();</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>std::ref 将参数转换成引用的形式</p>
+<ul>
+<li><p>使用绑定传递参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">class Test</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">	void Print(int x) &#123; std::cout &lt;&lt; x &lt;&lt; std::endl; &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">	Test MyTest;</div><div class="line">	int x = 11;</div><div class="line">	std::thread MyThread(&amp;Test::Print, &amp;MyTest, x);</div><div class="line">	MyThread.join();</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>使用std::move移动传递</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">void ProcessTest(std::unique_ptr&lt;Test&gt; UniquePointer)</div><div class="line">&#123;</div><div class="line">	UniquePointer-&gt;Print(123);</div><div class="line">&#125;</div><div class="line"></div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">	std::unique_ptr&lt;Test&gt; TestPointer(new Test);</div><div class="line">	std::thread MyThread(ProcessTest, std::move(TestPointer));</div><div class="line">	MyThread.join();</div><div class="line">	system(&quot;pause&quot;);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="转移线程所有权"><a href="#转移线程所有权" class="headerlink" title="转移线程所有权"></a>转移线程所有权</h2><p>thread是可以move不可以copy的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">void fun1()</div><div class="line">void fun2()</div><div class="line">std::thread t1(fun1); //t1 拥有执行函数fun1</div><div class="line">std::thread t2 = std::move(t1); //t2拥有t1的使用权，t1现在没有执行函数</div><div class="line">t1 = std::thread(fun2); //t1拥有执行函数fun2</div><div class="line"></div><div class="line">std::thread t3; </div><div class="line">t3 = std::move(t2); //t3现在拥有t2的使用权，t2现在没有执行函数。</div><div class="line">t1 = std::move(t3); //t1之前拥有执行函数fun2,不能被赋值，崩溃</div></pre></td></tr></table></figure></p>
+<p>不能通过赋一个新值给 std::thread 对象的方式来”丢弃”一个线程,。std::move移动就是转移控制权，原先的资源被销毁。</p>
+<h2 id="识别线程"><a href="#识别线程" class="headerlink" title="识别线程"></a>识别线程</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">std::thread MyTread(func);</div><div class="line">std::thread::id = MyTread.get_id();</div><div class="line">std::thread::id = std::this_thread::get_id();</div></pre></td></tr></table></figure>
+<hr>
+<h1 id="线程间共享数据"><a href="#线程间共享数据" class="headerlink" title="线程间共享数据"></a>线程间共享数据</h1><h2 id="条件竞争"><a href="#条件竞争" class="headerlink" title="条件竞争"></a>条件竞争</h2><p>多个线程并发的修改同一个数据块，会造成未定义的行为。</p>
+<h2 id="使用互斥量保护共享数据"><a href="#使用互斥量保护共享数据" class="headerlink" title="使用互斥量保护共享数据"></a>使用互斥量保护共享数据</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">std::mutex MyMutex;</div><div class="line">std::lock_guard&lt;std::mutex&gt; guard(MyMutex);</div></pre></td></tr></table></figure>
+<p>例子：线程安全的stack<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div></pre></td><td class="code"><pre><div class="line">class empty_stack_exception:std::exception</div><div class="line">&#123;</div><div class="line">	const char* what() const throw()</div><div class="line">	&#123;</div><div class="line">		return &quot;empty stack!&quot;;</div><div class="line">	&#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">template&lt;typename T&gt;</div><div class="line">class ThreadSafe_Stack</div><div class="line">&#123;</div><div class="line">private:</div><div class="line">	std::stack&lt;T&gt; data;</div><div class="line">	mutable std::mutex m;</div><div class="line"></div><div class="line">public:</div><div class="line">	ThreadSafe_Stack()</div><div class="line">		:data(std::stack&lt;T&gt;())&#123;&#125;</div><div class="line"></div><div class="line">	ThreadSafe_Stack(const ThreadSafe_Stack&amp; Other)</div><div class="line">	&#123;</div><div class="line">		std::lock_guard&lt;std::mutex&gt; guard(m);</div><div class="line">		data = Other.data;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	ThreadSafe_Stack&amp; operator=(const ThreadSafe_Stack &amp;) = delete;</div><div class="line"></div><div class="line">	void Push(T new_value)</div><div class="line">	&#123;</div><div class="line">		std::lock_guard&lt;std::mutex&gt; guard(m);</div><div class="line">		data.push(new_value);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	std::shared_ptr&lt;T&gt; Pop()</div><div class="line">	&#123;</div><div class="line">		std::lock_guard&lt;std::mutex&gt; guard(m);</div><div class="line">		if (data.empty())</div><div class="line">			throw empty_stack_exception();</div><div class="line">		std::shared_ptr&lt;T&gt; const Res(std::make_shared&lt;T&gt;(data.pop()));</div><div class="line">		data.pop();</div><div class="line">		return Res;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	void Pop(T&amp; Value)</div><div class="line">	&#123;</div><div class="line">		std::lock_guard&lt;std::mutex&gt; guard(m);</div><div class="line">		if (data.empty())</div><div class="line">		&#123;</div><div class="line">			throw empty_stack_exception();</div><div class="line">		&#125;</div><div class="line">		Value = data.top();</div><div class="line">		data.pop();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	bool empty()const</div><div class="line">	&#123;</div><div class="line">		std::lock_guard&lt;std::mutex&gt; lock(m);</div><div class="line">		return data.empty();</div><div class="line">	&#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<h2 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h2><p>两个或两个以上的互斥量来锁定了一个操作。造成互相等待另一个线程解锁。<br>std::lock 可以一次性锁住多个互斥量。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">struct bank_account &#123;</div><div class="line">    explicit bank_account(int balance) : balance(balance) &#123;&#125;</div><div class="line">    int balance;</div><div class="line">    std::mutex m;</div><div class="line">&#125;;</div><div class="line"> </div><div class="line">void transfer(bank_account &amp;from, bank_account &amp;to, int amount)</div><div class="line">&#123;</div><div class="line">    // lock both mutexes without deadlock</div><div class="line">    std::lock(from.m, to.m);</div><div class="line">    // make sure both already-locked mutexes are unlocked at the end of scope</div><div class="line">    std::lock_guard&lt;std::mutex&gt; lock1(from.m, std::adopt_lock);</div><div class="line">    std::lock_guard&lt;std::mutex&gt; lock2(to.m, std::adopt_lock);</div><div class="line"> </div><div class="line">// equivalent approach:</div><div class="line">//    std::unique_lock&lt;std::mutex&gt; lock1(from.m, std::defer_lock);</div><div class="line">//    std::unique_lock&lt;std::mutex&gt; lock2(to.m, std::defer_lock);</div><div class="line">//    std::lock(lock1, lock2);</div><div class="line"> </div><div class="line">    from.balance -= amount;</div><div class="line">    to.balance += amount;</div><div class="line">&#125;</div><div class="line"> </div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">    bank_account my_account(100);</div><div class="line">    bank_account your_account(50);</div><div class="line"> </div><div class="line">    std::thread t1(transfer, std::ref(my_account), std::ref(your_account), 10);</div><div class="line">    std::thread t2(transfer, std::ref(your_account), std::ref(my_account), 5);</div><div class="line"> </div><div class="line">    t1.join();</div><div class="line">    t2.join();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>std::defer_lock, std::try_to_lock, std::adopt_lock<br>defer_lock_t    do not acquire ownership of the mutex<br>try_to_lock_t    try to acquire ownership of the mutex without blocking<br>adopt_lock_t    assume the calling thread already has ownership of the mutex</p>
+<h2 id="避免死锁"><a href="#避免死锁" class="headerlink" title="避免死锁"></a>避免死锁</h2><ul>
+<li>避免嵌套锁 一个线程已获得一个锁时，再别去获取第二个。</li>
+<li>避免在持有锁时调用用户提供的代码 </li>
+<li>使用固定顺序获取锁</li>
+</ul>
+<p>std::lock_guard ，是一个参数化的互斥量模板类，并且它提供很多RAII类型锁用来管理 std::lock_guard 类型</p>
+<h2 id="std-unique-lock——灵活的锁"><a href="#std-unique-lock——灵活的锁" class="headerlink" title="std::unique_lock——灵活的锁"></a>std::unique_lock——灵活的锁</h2><p>支持lock(), try_lock()和unlock()成员函数，所以能将 std::unique_lock 对象传递到 std::lock()std::unique_lock 对象的体积通常要比 std::lock_guard 对象大，当使用 std::unique_lock 替代 std::lock_guard ，因为会对标志进行适当的更新或检查，就会做些轻微的性能惩罚。当 std::lock_guard 已经能够满足你的需求，那么还是建议你继续使用它。当需要更加灵活的锁时，最好选择 std::unique_lock</p>
+<h2 id="锁的粒度"><a href="#锁的粒度" class="headerlink" title="锁的粒度"></a>锁的粒度</h2><p>锁的粒度是用来描述通过一个锁保护着的数据量大小。一个细粒度锁能够保护较小的数据量，一个粗粒度锁能够保护较多的数据量。</p>
+<h2 id="保护共享数据的替代设施"><a href="#保护共享数据的替代设施" class="headerlink" title="保护共享数据的替代设施"></a>保护共享数据的替代设施</h2><p>双重检查锁<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">void undefined_behaviour_with_double_checked_locking()</div><div class="line">&#123;</div><div class="line">    if(!resource_ptr) // 1</div><div class="line">    &#123;</div><div class="line">        std::lock_guard&lt;std::mutex&gt; lk(resource_mutex);</div><div class="line">        if(!resource_ptr) // 2</div><div class="line">        &#123;</div><div class="line">            resource_ptr.reset(new some_resource); // 3</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    resource_ptr-&gt;do_something(); // 4</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>1的读取操作与3个写入操作没有同步，会产生条件竞争。会导致未定义行为。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">std::shared_ptr&lt;some_resource&gt; resource_ptr;</div><div class="line">std::once_flag resource_flag; // 1</div><div class="line">void init_resource()</div><div class="line">&#123;</div><div class="line">    resource_ptr.reset(new some_resource);</div><div class="line">&#125;</div><div class="line">void foo()</div><div class="line">&#123;</div><div class="line">    std::call_once(resource_flag,init_resource); // 可以完整的进行一次初始化</div><div class="line">    resource_ptr-&gt;do_something();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在 std::call_once 的结束时，就能安全的知道指针已经被其他的线程初始化了。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://www.hhhhyf.com/2017/11/08/c-11/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1397,7 +1543,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1419,7 +1565,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
