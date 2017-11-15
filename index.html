@@ -257,6 +257,123 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://www.hhhhyf.com/2017/11/15/cpp-concurrency2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Sylar">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sylar's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/11/15/cpp-concurrency2/" itemprop="url">《C++ Concurrency in Action》笔记2</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-15T08:15:02+08:00">
+                2017-11-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="同步并发操作"><a href="#同步并发操作" class="headerlink" title="同步并发操作"></a>同步并发操作</h1><h2 id="条件变量"><a href="#条件变量" class="headerlink" title="条件变量"></a>条件变量</h2><p>std::condition_variable 条件变量<br>notify_one()成员函数，对等待的线程(如果有等待线程)进行通知。<br>wait()函数，检查条件，如果满足返回，不满足解锁互斥量，阻塞线程。等notify_one()的通知。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">template&lt;typename T&gt;</div><div class="line">class threadsafe_queue</div><div class="line">&#123;</div><div class="line">private:</div><div class="line">    std::mutex mut;</div><div class="line">    std::queue&lt;T&gt; data_queue;</div><div class="line">    std::condition_variable data_cond;</div><div class="line">public:</div><div class="line">    void push(T new_value)</div><div class="line">    &#123;</div><div class="line">        std::lock_guard&lt;std::mutex&gt; lk(mut);</div><div class="line">        data_queue.push(new_value);</div><div class="line">        data_cond.notify_one();</div><div class="line">    &#125;</div><div class="line">    void wait_and_pop(T&amp; value)</div><div class="line">    &#123;</div><div class="line">        std::unique_lock&lt;std::mutex&gt; lk(mut);</div><div class="line">        data_cond.wait(lk,[this]&#123;return !data_queue.empty();&#125;);</div><div class="line">        value=data_queue.front();</div><div class="line">        data_queue.pop();</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<h2 id="期望，异步函数"><a href="#期望，异步函数" class="headerlink" title="期望，异步函数"></a>期望，异步函数</h2><p> std::async 启动一个异步任务。与 std::thread 对<br>象等待运行方式的不同， std::async 会返回一个 std::future 对象，这个对象持有最终计算出来的结果。当你需要这个值时，你只需要调用这个对象的get()成员函数；并且直到“期望”状态为就绪的情况下，线程才会阻塞；之后，返回计算结果。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">auto future1 = std::async(std::launch::async, function(), 1);</div><div class="line">auto future2 = std::async(std::launch::deferred, function, std::ref(x));</div><div class="line">auto future3 = std::async(std::launch::deferred | std::launch::async, function, std::ref(x));</div><div class="line">future2.wait();</div></pre></td></tr></table></figure>
+<h2 id="任务"><a href="#任务" class="headerlink" title="任务"></a>任务</h2><p>std::packaged_task&lt;&gt;对一个函数或可调用对象，绑定一个期望当 std::packaged_task&lt;&gt;对象被调用，它就会调用相关函数或可调用对象，将期望状态置为就绪，返回值也会被存储为相关数据。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">std::mutex m;</div><div class="line">std::deque&lt;std::packaged_task&lt;void()&gt; &gt; tasks;</div><div class="line">bool gui_shutdown_message_received();</div><div class="line">void get_and_process_gui_message();</div><div class="line">void gui_thread() // 1</div><div class="line">&#123;</div><div class="line">    while(!gui_shutdown_message_received()) // 2</div><div class="line">    &#123;</div><div class="line">        get_and_process_gui_message(); // 3</div><div class="line">        std::packaged_task&lt;void()&gt; task;</div><div class="line">        &#123;</div><div class="line">            std::lock_guard&lt;std::mutex&gt; lk(m);</div><div class="line">            if(tasks.empty()) // 4</div><div class="line">                continue;</div><div class="line">            task=std::move(tasks.front()); // 5</div><div class="line">            tasks.pop_front();</div><div class="line">        &#125;</div><div class="line">        task(); // 6</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">std::thread gui_bg_thread(gui_thread);</div><div class="line">template&lt;typename Func&gt;</div><div class="line">std::future&lt;void&gt; post_task_for_gui_thread(Func f)</div><div class="line">&#123;</div><div class="line">    std::packaged_task&lt;void()&gt; task(f); // 7</div><div class="line">    std::future&lt;void&gt; res=task.get_future(); // 8</div><div class="line">    std::lock_guard&lt;std::mutex&gt; lk(m); // 9</div><div class="line">    tasks.push_back(std::move(task)); // 10</div><div class="line">    return res;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="promises"><a href="#promises" class="headerlink" title="promises"></a>promises</h2><p>std::promise<t> 提供设定值的方式(类型为T)，这个类型会和后面看到的 std::future<t> 对象相关联。一对 std::promise/std::future 会为这种方式提供一个可行的机制；在期望上可以阻塞等待线程，同时，提供数据的线程可以使用组合中的“承诺”来对相关值进行设置，以及将“期望”的状态置为“就绪”。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">void accumulate(std::vector&lt;int&gt;::iterator first,</div><div class="line">                std::vector&lt;int&gt;::iterator last,</div><div class="line">                std::promise&lt;int&gt; accumulate_promise)</div><div class="line">&#123;</div><div class="line">    int sum = std::accumulate(first, last, 0);</div><div class="line">    accumulate_promise.set_value(sum);  // Notify future</div><div class="line">&#125;</div><div class="line"> </div><div class="line">void do_work(std::promise&lt;void&gt; barrier)</div><div class="line">&#123;</div><div class="line">    std::this_thread::sleep_for(std::chrono::seconds(1));</div><div class="line">    barrier.set_value();</div><div class="line">&#125;</div><div class="line"> </div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">    // Demonstrate using promise&lt;int&gt; to transmit a result between threads.</div><div class="line">    std::vector&lt;int&gt; numbers = &#123; 1, 2, 3, 4, 5, 6 &#125;;</div><div class="line"></div><div class="line">    std::promise&lt;int&gt; accumulate_promise;</div><div class="line">    std::future&lt;int&gt; accumulate_future = accumulate_promise.get_future();</div><div class="line"></div><div class="line">    std::thread work_thread(accumulate, numbers.begin(), numbers.end(),</div><div class="line">                            std::move(accumulate_promise));</div><div class="line">    accumulate_future.wait();  // wait for result</div><div class="line">    std::cout &lt;&lt; &quot;result=&quot; &lt;&lt; accumulate_future.get() &lt;&lt; &apos;\n&apos;;</div><div class="line">    work_thread.join();  // wait for thread completion</div><div class="line"> </div><div class="line">    // Demonstrate using promise&lt;void&gt; to signal state between threads.</div><div class="line">    std::promise&lt;void&gt; barrier;</div><div class="line">    std::future&lt;void&gt; barrier_future = barrier.get_future();</div><div class="line">    std::thread new_work_thread(do_work, std::move(barrier));</div><div class="line">    barrier_future.wait();</div><div class="line">    new_work_thread.join();</div><div class="line">&#125;</div></pre></td></tr></table></figure></t></t></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://www.hhhhyf.com/2017/11/14/cpp-concurrency/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1543,7 +1660,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
